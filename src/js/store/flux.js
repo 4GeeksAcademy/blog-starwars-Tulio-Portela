@@ -2,36 +2,50 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 	  store: {
 		favorites: [],
+		characters: [],
+		planets: [],
+		vehicles: []
 	  },
 	  actions: {
-		addFavorites: (filter_name, type, uid, img) => {
+		addFavorites: (name, type, uid, img) => {
 		  const store = getStore();
-		  let aux = 0;
+		  if (store.favorites.some(fav => fav.uid === uid && fav.type === type)) return;
   
-		  store.favorites.map((item) => {
-			if (item.name == filter_name) {
-			  aux = 1;
-			}
-		  });
-  
-		  if (aux == 0)
-			setStore({
-			  favorites: [
-				...store.favorites,
-				{ name: filter_name, type: type, uid: uid, img: img },
-			  ],
-			});
+		  const newFavorite = { name, type, uid, img };
+		  setStore({ favorites: [...store.favorites, newFavorite] });
 		},
-  
 		deleteFavorites: (type, uid) => {
 		  const store = getStore();
-		  const filter_list = store.favorites.filter(
-			(item) => item.type != type || item.uid != uid
-		  );
-		  setStore({ favorites: filter_list });
-		  return store.favorites;
+		  setStore({ favorites: store.favorites.filter(fav => !(fav.type === type && fav.uid === uid)) });
 		},
-	  },
+		getCharacters: async () => {
+		  try {
+			const response = await fetch("https://www.swapi.tech/api/people");
+			const body = await response.json();
+			setStore({ characters: body.results });
+		  } catch (error) {
+			console.error("Error fetching characters:", error);
+		  }
+		},
+		getPlanets: async () => {
+		  try {
+			const response = await fetch("https://www.swapi.tech/api/planets");
+			const body = await response.json();
+			setStore({ planets: body.results });
+		  } catch (error) {
+			console.error("Error fetching planets:", error);
+		  }
+		},
+		getVehicles: async () => {
+		  try {
+			const response = await fetch("https://www.swapi.tech/api/vehicles");
+			const body = await response.json();
+			setStore({ vehicles: body.results });
+		  } catch (error) {
+			console.error("Error fetching vehicles:", error);
+		  }
+		}
+	  }
 	};
   };
   

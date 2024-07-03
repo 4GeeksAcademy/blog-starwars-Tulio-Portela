@@ -1,12 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 
-export const Footer = () => (
-  <footer
-    className="footer py-3 bg-dark sticky-bottom"
-    style={{ minHeight: "5vh" }}
-  >
-    <p className="d-flex align-items-center justify-content-center text-white m-0">
-      Copyright © Star Wars Blog React Website 2024 - by TulioPortela
-    </p>
-  </footer>
-);
+export function Footer() {
+  return (
+    <footer style={{ backgroundColor: "#f1f1f1", padding: "10px", textAlign: "center" }}>
+      <p>© 2024 Your Company. All rights reserved.By Túlio Portela</p>
+    </footer>
+  );
+}
+
