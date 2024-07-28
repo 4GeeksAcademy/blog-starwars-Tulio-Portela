@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { Link, useParams, useHistory } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 const FavoriteIcon = ({ id, type, isFavorite }) => {
@@ -7,9 +7,9 @@ const FavoriteIcon = ({ id, type, isFavorite }) => {
 
   const toggleFavorite = () => {
     if (isFavorite) {
-      actions.removeFavorite(id);
+      actions.deleteFavorites(type, id);
     } else {
-      actions.addFavorite(id);
+      actions.addFavorites(id, type, id);
     }
   };
 
@@ -27,7 +27,7 @@ const FavoriteIcon = ({ id, type, isFavorite }) => {
 export const Details = () => {
   const { store, actions } = useContext(Context);
   const params = useParams();
-  const history = useHistory();
+  const history = useNavigate();
 
   useEffect(() => {
     if (params.type && params.id) {
@@ -38,10 +38,30 @@ export const Details = () => {
   const data = store.details;
 
   useEffect(() => {
-    if (!data) {
-      history.push("/");
+    console.log("Details data:", data); // Debugging
+    if (data === null) {
+      history("/");
     }
   }, [data, history]);
+
+  if (!data) {
+    return (
+      <div
+        className="d-flex align-items-center justify-content-center fs-3"
+        style={{ height: "40vw" }}
+      >
+        <div className="spinner-border text-dark" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Definindo o caminho da imagem baseado no tipo
+  const imageUrl =
+    params.type === "people"
+      ? `https://starwars-visualguide.com/assets/img/characters/${params.id}.jpg`
+      : `https://starwars-visualguide.com/assets/img/${params.type}/${params.id}.jpg`;
 
   return (
     <React.Fragment>
@@ -52,7 +72,7 @@ export const Details = () => {
               <div>
                 <img
                   style={{ height: "350px", borderRadius: "10px" }}
-                  src={`https://starwars-visualguide.com/assets/img/${params.type}/${params.id}.jpg`}
+                  src={imageUrl}
                   alt={data.properties.name}
                 />
               </div>
@@ -62,7 +82,9 @@ export const Details = () => {
                   <FavoriteIcon
                     id={params.id}
                     type={params.type}
-                    isFavorite={store.favorites.includes(params.id)}
+                    isFavorite={store.favorites.some(
+                      (fav) => fav.uid === params.id && fav.type === params.type
+                    )}
                   />
                 </h1>
                 <p className="lead">{data.description}</p>

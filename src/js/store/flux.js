@@ -4,7 +4,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 		favorites: [],
 		characters: [],
 		planets: [],
-		vehicles: []
+		vehicles: [],
+		details: null // Adiciona o estado de detalhes aqui
 	  },
 	  actions: {
 		addFavorites: (name, type, uid, img) => {
@@ -43,6 +44,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 			setStore({ vehicles: body.results });
 		  } catch (error) {
 			console.error("Error fetching vehicles:", error);
+		  }
+		},
+		getDetails: async (type, id) => { // Adiciona a função getDetails
+		  try {
+			const response = await fetch(`https://www.swapi.tech/api/${type}/${id}`);
+			const body = await response.json();
+			setStore({ details: body.result });
+		  } catch (error) {
+			console.error("Error fetching details:", error);
 		  }
 		}
 	  }
